@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Bookstore Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #263238;
+        }
+
+        header {
+            background: #263b55;
+            color: white;
+            padding: 24px 30px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        header p {
+            margin: 0;
+            color: #dce5ef;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px 25px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        nav button {
+            background: #e8edf3;
+            color: #263b55;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        nav button:hover,
+        nav button.active {
+            background: #263b55;
+            color: white;
+        }
+
+        main {
+            padding: 25px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 22px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 8px;
+            border: 1px solid #e0e4e9;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #687789;
+            margin: 0 0 12px;
+        }
+
+        .card p {
+            font-size: 27px;
+            font-weight: bold;
+            margin: 0;
+            color: #263b55;
+        }
+
+        .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+            border: 1px solid #e0e4e9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccd3dc;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .primary,
+        .danger,
+        .secondary {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #263b55;
+            color: white;
+        }
+
+        .secondary {
+            background: #e8edf3;
+            color: #263b55;
+        }
+
+        .danger {
+            background: #b83232;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .search-row input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e6e9ee;
+            text-align: left;
+        }
+
+        th {
+            background: #edf1f6;
+            color: #263b55;
+        }
+
+        tr:hover td {
+            background: #fafbfd;
+        }
+
+        .status {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .status.success {
+            display: block;
+            background: #e1f5e8;
+            color: #176b36;
+        }
+
+        .status.error {
+            display: block;
+            background: #fde8e8;
+            color: #a32323;
+        }
+
+        .muted {
+            color: #687789;
+            font-size: 13px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #687789;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 14px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            nav {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Online Bookstore Management System</h1>
+    <p>Manage books, customers, orders, returns and fines in one place.</p>
+</header>
+
+<nav id="navigation">
+    <button class="active" data-section="dashboard">Dashboard</button>
+    <button data-section="books">Books</button>
+    <button data-section="customers">Customers</button>
+    <button data-section="authors">Authors</button>
+    <button data-section="publishers">Publishers</button>
+    <button data-section="orders">Orders</button>
+    <button data-section="returns">Returns</button>
+    <button data-section="fines">Fines</button>
+</nav>
+
+<main>
+
+    <div id="message" class="status"></div>
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="section active">
+        <h2>Dashboard</h2>
+        <p>Overview of the bookstore database.</p>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Total Books</h3>
+                <p id="bookCount">—</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Customers</h3>
+                <p id="customerCount">—</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Orders</h3>
+                <p id="orderCount">—</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Returns</h3>
+                <p id="returnCount">—</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Recent Books</h3>
+            <div id="recentBooks" class="table-wrapper">
+                <p class="muted">Loading books...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- BOOKS -->
+
+    <section id="books" class="section">
+        <h2>Book Management</h2>
+
+        <div class="panel">
+            <h3>Search Books</h3>
+
+            <div class="search-row">
+                <input
+                    id="searchTitle"
+                    type="text"
+                    placeholder="Enter book title"
+                >
+
+                <button class="primary" onclick="searchBooks()">
+                    Search
+                </button>
+
+                <button class="secondary" onclick="loadBooks()">
+                    Show All
+                </button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Add a New Book</h3>
+
+            <form id="addBookForm">
+                <div class="form-grid">
+
+                    <input
+                        name="isbn"
+                        placeholder="ISBN"
+                        required
+                    >
+
+                    <input
+                        name="title"
+                        placeholder="Book Title"
+                        required
+                    >
+
+                    <input
+                        name="edition"
+                        placeholder="Edition"
+                    >
+
+                    <input
+                        name="pub_year"
+                        type="number"
+                        placeholder="Publication Year"
+                    >
+
+                    <input
+                        name="price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Price"
+                        required
+                    >
+
+                    <input
+                        name="total_copies"
+                        type="number"
+                        min="0"
+                        placeholder="Total Copies"
+                        required
+                    >
+
+                    <input
+                        name="available_copies"
+                        type="number"
+                        min="0"
+                        placeholder="Available Copies"
+                        required
+                    >
+
+                    <input
+                        name="publisher_id"
+                        type="number"
+                        min="1"
+                        placeholder="Publisher ID"
+                        required
+                    >
+
+                </div>
+
+                <button class="primary" type="submit">
+                    Add Book
+                </button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h3>All Books</h3>
+            <p class="muted">
+                Use the action buttons to update a book's price or delete a book.
+            </p>
+
+            <div id="booksTable" class="table-wrapper">
+                <p>Loading books...</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Place an Order</h3>
+
+            <form id="orderForm">
+                <div class="form-grid">
+                    <input
+                        name="customer_id"
+                        type="number"
+                        min="1"
+                        placeholder="Customer ID"
+                        required
+                    >
+
+                    <input
+                        name="book_id"
+                        type="number"
+                        min="1"
+                        placeholder="Book ID"
+                        required
+                    >
+                </div>
+
+                <button class="primary" type="submit">
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h3>Return a Book</h3>
+
+            <form id="returnForm">
+                <div class="form-grid">
+                    <input
+                        name="order_id"
+                        type="number"
+                        min="1"
+                        placeholder="Order ID"
+                        required
+                    >
+
+                    <select name="book_condition" required>
+                        <option value="Good">Good Condition</option>
+                        <option value="Damaged">Damaged</option>
+                    </select>
+                </div>
+
+                <button class="primary" type="submit">
+                    Process Return
+                </button>
+            </form>
+        </div>
+    </section>
+
+
+    <!-- CUSTOMERS -->
+
+    <section id="customers" class="section">
+        <h2>Customer Management</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('customers')">
+                Refresh Customers
+            </button>
+
+            <div id="customersTable" class="table-wrapper">
+                <p>Loading customers...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- AUTHORS -->
+
+    <section id="authors" class="section">
+        <h2>Author Management</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('authors')">
+                Refresh Authors
+            </button>
+
+            <div id="authorsTable" class="table-wrapper">
+                <p>Loading authors...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- PUBLISHERS -->
+
+    <section id="publishers" class="section">
+        <h2>Publisher Management</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('publishers')">
+                Refresh Publishers
+            </button>
+
+            <div id="publishersTable" class="table-wrapper">
+                <p>Loading publishers...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ORDERS -->
+
+    <section id="orders" class="section">
+        <h2>Order Management</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('orders')">
+                Refresh Orders
+            </button>
+
+            <div id="ordersTable" class="table-wrapper">
+                <p>Loading orders...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- RETURNS -->
+
+    <section id="returns" class="section">
+        <h2>Book Returns</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('returns')">
+                Refresh Returns
+            </button>
+
+            <div id="returnsTable" class="table-wrapper">
+                <p>Loading returns...</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- FINES -->
+
+    <section id="fines" class="section">
+        <h2>Fine Management</h2>
+
+        <div class="panel">
+            <button class="primary" onclick="loadTable('fine')">
+                Refresh Fines
+            </button>
+
+            <div id="fineTable" class="table-wrapper">
+                <p>Loading fines...</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    Online Bookstore Management System | Database Management Project
+</footer>
+
+
+<script>
+    // Change this address only if your Flask backend is running
+    // on another computer.
+    const API = "http://127.0.0.1:5000";
+
+
+    // Display success and error messages.
+
+    function showMessage(message, success = true) {
+        const box = document.getElementById("message");
+
+        box.textContent = message;
+        box.className = "status " + (success ? "success" : "error");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        setTimeout(() => {
+            box.className = "status";
+        }, 5000);
+    }
+
+
+    // Make API requests and handle errors.
+
+    async function request(path, options = {}) {
+        const response = await fetch(API + path, {
+            ...options,
+            headers: {
+                ...(options.body ? {
+                    "Content-Type": "application/json"
+                } : {}),
+                ...(options.headers || {})
+            }
+        });
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+            data = text ? JSON.parse(text) : {};
+        } catch {
+            data = text;
+        }
+
+        if (!response.ok) {
+            const detail =
+                typeof data === "object" && data !== null
+                    ? (data.error || data.message || data.msg)
+                    : data;
+
+            throw new Error(
+                detail || `Request failed: HTTP ${response.status}`
+            );
+        }
+
+        return data;
+    }
+
+
+    // Convert API results into an array of records.
+
+    function records(data) {
+        if (Array.isArray(data)) {
+            return data;
+        }
+
+        if (data && typeof data === "object") {
+            for (const key of [
+                "books",
+                "customers",
+                "orders",
+                "returns",
+                "publishers",
+                "authors",
+                "fines",
+                "data",
+                "results"
+            ]) {
+                if (Array.isArray(data[key])) {
+                    return data[key];
+                }
+            }
+
+            return [data];
+        }
+
+        return [];
+    }
+
+
+    // Safely display database values in HTML.
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+
+    // Build a table from the returned database records.
+
+    function makeTable(rows, actions = false) {
+        if (!rows.length) {
+            return "<p>No records found.</p>";
+        }
+
+        const columns = [
+            ...new Set(rows.flatMap(row => Object.keys(row)))
+        ];
+
+        let html = "<table><thead><tr>";
+
+        for (const column of columns) {
+            html += `<th>${escapeHTML(column)}</th>`;
+        }
+
+        if (actions) {
+            html += "<th>Actions</th>";
+        }
+
+        html += "</tr></thead><tbody>";
+
+        for (const row of rows) {
+            html += "<tr>";
+
+            for (const column of columns) {
+                html += `<td>${escapeHTML(row[column])}</td>`;
+            }
+
+            if (actions) {
+                const id = row.book_id ?? row.id;
+
+                html += `
+                    <td>
+                        <button class="secondary"
+                            onclick="updatePrice(${Number(id)})">
+                            Update Price
+                        </button>
+
+                        <button class="danger"
+                            onclick="deleteBook(${Number(id)})">
+                            Delete
+                        </button>
+                    </td>
+                `;
+            }
+
+            html += "</tr>";
+        }
+
+        html += "</tbody></table>";
+
+        return html;
+    }
+
+
+    // Load books from Flask.
+
+    async function loadBooks() {
+        const container = document.getElementById("booksTable");
+
+        container.innerHTML = "<p>Loading books...</p>";
+
+        try {
+            const data = await request("/books");
+            const rows = records(data);
+
+            container.innerHTML = makeTable(rows, true);
+
+            document.getElementById("bookCount").textContent =
+                rows.length;
+
+            document.getElementById("recentBooks").innerHTML =
+                makeTable(rows.slice(0, 5));
+
+        } catch (error) {
+            container.innerHTML =
+                `<p>${escapeHTML(error.message)}</p>`;
+
+            document.getElementById("bookCount").textContent = "—";
+        }
+    }
+
+
+    // Search for books by title.
+
+    async function searchBooks() {
+        const title = document.getElementById("searchTitle").value.trim();
+
+        if (!title) {
+            loadBooks();
+            return;
+        }
+
+        try {
+            const data = await request(
+                "/search_books?title=" + encodeURIComponent(title)
+            );
+
+            const rows = records(data);
+
+            document.getElementById("booksTable").innerHTML =
+                makeTable(rows, true);
+
+            showMessage(`${rows.length} matching record(s) found.`);
+
+        } catch (error) {
+            showMessage("Search failed: " + error.message, false);
+        }
+    }
+
+
+    // Add a book using POST /add_book.
+
+    document.getElementById("addBookForm")
+        .addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const form = new FormData(this);
+            const book = Object.fromEntries(form.entries());
+
+            for (const field of [
+                "pub_year",
+                "price",
+                "total_copies",
+                "available_copies",
+                "publisher_id"
+            ]) {
+                if (book[field] !== "") {
+                    book[field] = Number(book[field]);
+                } else {
+                    book[field] = null;
+                }
+            }
+
+            try {
+                const result = await request("/add_book", {
+                    method: "POST",
+                    body: JSON.stringify(book)
+                });
+
+                showMessage(
+                    result.message || "Book added successfully."
+                );
+
+                this.reset();
+                await loadBooks();
+
+            } catch (error) {
+                showMessage("Could not add book: " + error.message, false);
+            }
+        });
+
+
+    // Update a book's price using PUT /update_price/<book_id>.
+
+    async function updatePrice(bookId) {
+        if (!Number.isInteger(bookId) || bookId <= 0) {
+            showMessage(
+                "Could not identify the book ID. Check your BOOK table column name.",
+                false
+            );
+            return;
+        }
+
+        const price = prompt("Enter the new price:");
+
+        if (price === null) {
+            return;
+        }
+
+        if (price.trim() === "" ||
+            !Number.isFinite(Number(price)) ||
+            Number(price) < 0) {
+            showMessage("Enter a valid non-negative price.", false);
+            return;
+        }
+
+        try {
+            const result = await request(
+                `/update_price/${bookId}`,
+                {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        price: Number(price)
+                    })
+                }
+            );
+
+            showMessage(
+                result.message || "Book price updated successfully."
+            );
+
+            await loadBooks();
+
+        } catch (error) {
+            showMessage("Update failed: " + error.message, false);
+        }
+    }
+
+
+    // Delete a book using DELETE /delete_book/<book_id>.
+
+    async function deleteBook(bookId) {
+        if (!Number.isInteger(bookId) || bookId <= 0) {
+            showMessage(
+                "Could not identify the book ID.",
+                false
+            );
+            return;
+        }
+
+        if (!confirm(
+            "Are you sure you want to delete book ID " + bookId + "?"
+        )) {
+            return;
+        }
+
+        try {
+            const result = await request(
+                `/delete_book/${bookId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            showMessage(
+                result.message || "Book deleted successfully."
+            );
+
+            await loadBooks();
+
+        } catch (error) {
+            showMessage("Delete failed: " + error.message, false);
+        }
+    }
+
+
+    // Load records from the other database tables.
+
+    const tableEndpoints = {
+        customers: "/customers",
+        authors: "/authors",
+        publishers: "/publishers",
+        orders: "/orders",
+        returns: "/returns",
+        fine: "/fine"
+    };
+
+    const tableContainers = {
+        customers: "customersTable",
+        authors: "authorsTable",
+        publishers: "publishersTable",
+        orders: "ordersTable",
+        returns: "returnsTable",
+        fine: "fineTable"
+    };
+
+
+    async function loadTable(name) {
+        const container = document.getElementById(
+            tableContainers[name]
+        );
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "<p>Loading records...</p>";
+
+        try {
+            const data = await request(tableEndpoints[name]);
+            const rows = records(data);
+
+            container.innerHTML = makeTable(rows);
+
+            const countElements = {
+                customers: "customerCount",
+                orders: "orderCount",
+                returns: "returnCount"
+            };
+
+            if (countElements[name]) {
+                document.getElementById(
+                    countElements[name]
+                ).textContent = rows.length;
+            }
+
+        } catch (error) {
+            container.innerHTML =
+                `<p>${escapeHTML(error.message)}</p>`;
+        }
+    }
+
+
+    // Place an order using POST /place_order.
+
+    document.getElementById("orderForm")
+        .addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const form = new FormData(this);
+
+            const order = {
+                customer_id: Number(form.get("customer_id")),
+                book_id: Number(form.get("book_id"))
+            };
+
+            try {
+                const result = await request("/place_order", {
+                    method: "POST",
+                    body: JSON.stringify(order)
+                });
+
+                showMessage(
+                    result.message || "Order placed successfully."
+                );
+
+                this.reset();
+
+                await Promise.all([
+                    loadBooks(),
+                    loadTable("orders")
+                ]);
+
+            } catch (error) {
+                showMessage(
+                    "Could not place order: " + error.message,
+                    false
+                );
+            }
+        });
+
+
+    // Return a book using POST /return_book.
+
+    document.getElementById("returnForm")
+        .addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const form = new FormData(this);
+
+            const orderId = Number(form.get("order_id"));
+            const condition = form.get("book_condition");
+
+            if (!Number.isInteger(orderId) || orderId <= 0) {
+                showMessage("Enter a valid order ID.", false);
+                return;
+            }
+
+            try {
+                const result = await request("/return_book", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        book_condition: condition
+                    })
+                });
+
+                showMessage(
+                    result.message || "Book return processed successfully."
+                );
+
+                this.reset();
+
+                await Promise.all([
+                    loadBooks(),
+                    loadTable("orders"),
+                    loadTable("returns"),
+                    loadTable("fine")
+                ]);
+
+            } catch (error) {
+                showMessage(
+                    "Could not process return: " + error.message,
+                    false
+                );
+            }
+        });
+
+
+    // Switch between frontend sections.
+
+    document.querySelectorAll("nav button").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll("nav button").forEach(item => {
+                item.classList.remove("active");
+            });
+
+            document.querySelectorAll(".section").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            const sectionName = button.dataset.section;
+
+            document.getElementById(sectionName)
+                .classList.add("active");
+
+            if (sectionName === "dashboard") {
+                loadBooks();
+                loadTable("customers");
+                loadTable("orders");
+                loadTable("returns");
+            } else if (sectionName === "books") {
+                loadBooks();
+            } else if (tableEndpoints[sectionName]) {
+                loadTable(sectionName);
+            }
+        });
+    });
+
+
+    // Load initial dashboard data.
+
+    loadBooks();
+    loadTable("customers");
+    loadTable("orders");
+    loadTable("returns");
+
+</script>
+
+</body>
+</html>
